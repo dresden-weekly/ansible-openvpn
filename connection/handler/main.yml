@@ -1,0 +1,12 @@
+---
+- name: restart server
+  service:
+    name: 'openvpn'
+    arguments: '{{ openvpn_server_daemon }}'
+    state: restarted
+
+- name: restart client
+  service:
+    name: 'openvpn'
+    arguments: '{{ openvpn_client_daemon }}'
+    state: restarted

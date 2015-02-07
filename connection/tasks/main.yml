@@ -1,0 +1,7 @@
+---
+- include: 'server.yml'
+  when: openvpn_server_enabled
+
+- include: 'client.yml'
+  when: openvpn_client_enabled
+  delegate_to: '{{ openvpn_client }}'

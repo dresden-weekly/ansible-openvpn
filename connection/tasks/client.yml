@@ -1,0 +1,19 @@
+---
+- name: packages
+  apt:
+    name: '{{ item }}'
+    update_cache: yes
+    cache_valid_time: 86400
+  with_items: openvpn_packages
+
+- name: store key
+  copy:
+    content: '{{ openvpn_secret_content | default(openvpn_server_secret_result, true) }}'
+    dest: '{{ openvpn_client_cd }}/{{ openvpn_client_secret_name }}'
+  notify: restart client
+
+- name: configuration
+  template:
+    dest: '{{ openvpn_client_conf }}'
+    src: 'client.conf.j2'
+  notify: restart client

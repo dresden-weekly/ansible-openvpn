@@ -1,0 +1,36 @@
+---
+openvpn_server_enabled: yes
+# the provisioned machine is always the server
+openvpn_server_name: 'openvpn'
+openvpn_server_conf: '/etc/openvpn/{{ openvpn_server_name }}.conf'
+openvpn_server_device_name: 'vpn-{{ openvpn_server_name }}'
+openvpn_server_device_type: 'tun'
+openvpn_server_device_ip: 10.99.0.1
+openvpn_server_cd: '/etc/openvpn/'
+openvpn_server_daemon: '{{ openvpn_server_name }}'
+openvpn_server_bind_ip: '0.0.0.0'
+openvpn_server_bind_port: '2325'
+openvpn_server_user: 'nobody'
+openvpn_server_group: 'nogroup'
+openvpn_server_secret_name: '{{ openvpn_server_name }}.key'
+openvpn_server_log: '' # default: use syslog
+
+openvpn_client_enabled: yes
+openvpn_client: 'localhost' # default client is the provisioner
+openvpn_client_name: '{{ openvpn_server_name }}'
+openvpn_client_conf: '/etc/openvpn/{{ openvpn_client_name }}.conf'
+openvpn_client_device_name: 'vpn-{{ openvpn_client_name }}'
+openvpn_client_device_type: 'tun'
+openvpn_client_device_ip: 10.99.0.2
+openvpn_client_cd: '/etc/openvpn'
+openvpn_client_daemon: '{{ openvpn_client_name }}'
+openvpn_client_connect_ip: '{{ ansible_default_ipv4.address }}'
+openvpn_client_connect_port: '{{ openvpn_server_bind_port }}'
+openvpn_client_user: 'nobody'
+openvpn_client_group: 'nogroup'
+openvpn_client_secret_name: '{{ openvpn_client_name }}.key'
+openvpn_client_log: '' # default: use syslog
+openvpn_client_routes: [] # routes forwarded to the server
+# - 'network/ip [netmask] [gateway] [metric]'
+
+openvpn_secret_content: '' # default: auto generate secret

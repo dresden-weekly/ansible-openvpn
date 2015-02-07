@@ -1,0 +1,22 @@
+# {{ ansible_managed }}
+dev {{ openvpn_server_device_name }}
+dev-type {{ openvpn_server_device_type }}
+cd {{ openvpn_server_cd }}
+daemon {{ openvpn_server_daemon }}
+local {{ openvpn_server_bind_ip }}
+port {{ openvpn_server_bind_port }}
+user {{ openvpn_server_user }}
+group {{ openvpn_server_group }}
+ping 5
+ping-restart 30
+ping-timer-rem
+persist-tun
+persist-key
+secret {{ openvpn_server_secret_name }}
+
+{% if openvpn_server_log %}
+log {{ openvpn_server_log }}
+{% endif %}
+script-security 2
+
+ifconfig {{ openvpn_server_device_ip }} {{ openvpn_client_device_ip }}
