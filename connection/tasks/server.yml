@@ -1,33 +1,42 @@
 ---
-- name: packages
+- name: server | packages
   apt:
     name: '{{ item }}'
     update_cache: yes
     cache_valid_time: 86400
   with_items: openvpn_packages
 
-- name: store key
+- name: server | store key
   copy:
     content: '{{ openvpn_secret_content }}'
     dest: '{{ openvpn_server_cd }}/{{ openvpn_server_secret_name }}'
   when: (openvpn_secret_content is defined)
     and openvpn_secret_content
-  notify: restart server
+  notify:
+  - restart server
 
-- name: generate key
+- name: server | generate key
   command: 'openvpn --genkey --secret {{ openvpn_server_secret_name }}'
   args:
     chdir: '{{ openvpn_server_cd }}'
     creates: '{{ openvpn_server_cd }}/{{ openvpn_server_secret_name }}'
-  notify: restart server
+  notify:
+  - restart server
 
-- name: configuration
+- name: server | configuration
   template:
     dest: '{{ openvpn_server_conf }}'
     src: 'server.conf.j2'
-  notify: restart server
+  notify:
+  - restart server
 
-- name: extract key for client
+- name: server | extract key for client
   command: 'cat {{ openvpn_server_cd }}/{{ openvpn_server_secret_name }}'
   changed_when: no
   register: openvpn_server_secret_result
+
+- name: server | start
+  service:
+    name: 'openvpn'
+    arguments: '{{ openvpn_server_daemon }}'
+    state: started

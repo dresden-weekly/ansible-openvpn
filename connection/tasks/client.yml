@@ -1,19 +1,32 @@
 ---
-- name: packages
+- name: client | packages
   apt:
     name: '{{ item }}'
     update_cache: yes
     cache_valid_time: 86400
+  delegate_to: '{{ openvpn_client }}'
   with_items: openvpn_packages
 
-- name: store key
+- name: client | store key
   copy:
-    content: '{{ openvpn_secret_content | default(openvpn_server_secret_result, true) }}'
+    content: '{{ openvpn_secret_content | default(openvpn_server_secret_result.stdout, true) }}'
     dest: '{{ openvpn_client_cd }}/{{ openvpn_client_secret_name }}'
-  notify: restart client
+    mode: '600'
+  delegate_to: '{{ openvpn_client }}'
+  notify:
+  - restart client
 
-- name: configuration
+- name: client | configuration
   template:
     dest: '{{ openvpn_client_conf }}'
     src: 'client.conf.j2'
-  notify: restart client
+  delegate_to: '{{ openvpn_client }}'
+  notify:
+  - restart client
+
+- name: client | connect
+  delegate_to: '{{ openvpn_client }}'
+  service:
+    name: 'openvpn'
+    arguments: '{{ openvpn_client_daemon }}'
+    state: started
